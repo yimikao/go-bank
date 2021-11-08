@@ -50,11 +50,16 @@ type TransferTxResult struct {
 	ToEntry     Entry    `json:"to_entry"`
 }
 
+var txKey = struct{}{}
+
 func (s *Store) TransferTx(ctx context.Context, args TransferTxParams) (TransferTxResult, error) {
 	var result TransferTxResult
 	err := s.execTx(ctx, func(q *Queries) error {
 		var err error
 
+		txName := ctx.Value(txKey)
+
+		fmt.Println(txName, "create transfer")
 		result.Transfer, err = q.CreateTransfer(ctx, CreateTransferParams{
 			FromAccountID: args.FromAccountID,
 			ToAccountID:   args.ToAccountID,
@@ -65,6 +70,7 @@ func (s *Store) TransferTx(ctx context.Context, args TransferTxParams) (Transfer
 			return err
 		}
 
+		fmt.Println(txName, "create entry 1")
 		result.FromEntry, err = q.CreateEntry(ctx, CreateEntryParams{
 			AccountID: args.FromAccountID,
 			Amount:    -args.Amount,
@@ -72,6 +78,8 @@ func (s *Store) TransferTx(ctx context.Context, args TransferTxParams) (Transfer
 		if err != nil {
 			return err
 		}
+
+		fmt.Println(txName, "create entry 2")
 		result.ToEntry, err = q.CreateEntry(ctx, CreateEntryParams{
 			AccountID: args.ToAccountID,
 			Amount:    args.Amount,
@@ -79,10 +87,41 @@ func (s *Store) TransferTx(ctx context.Context, args TransferTxParams) (Transfer
 		if err != nil {
 			return err
 		}
-		return nil
 
 		//Add update accounts' balance later
-	})
+		fmt.Println(txName, "get account 1")
+		acc1, err := q.GetAccountForUpdate(ctx, args.FromAccountID)
+		if err != nil {
+			return err
+		}
+		//move money out of acc1: sender
+		fmt.Println(txName, "update account 1")
+		result.FromAccount, err = q.UpdateAccount(ctx, UpdateAccountParams{
+			ID:      args.FromAccountID,
+			Balance: acc1.Balance - args.Amount,
+		})
+		if err != nil {
+			return err
+		}
 
+		fmt.Println(txName, "get account 2")
+		acc2, err := q.GetAccountForUpdate(ctx, args.ToAccountID)
+		if err != nil {
+			return err
+		}
+
+		//move money into acc2: receiver
+
+		fmt.Println(txName, "update account 2")
+		result.ToAccount, err = q.UpdateAccount(ctx, UpdateAccountParams{
+			ID:      args.ToAccountID,
+			Balance: acc2.Balance + args.Amount,
+		})
+		if err != nil {
+			return err
+		}
+
+		return err
+	})
 	return result, err
 }
