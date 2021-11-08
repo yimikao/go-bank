@@ -89,33 +89,42 @@ func (s *Store) TransferTx(ctx context.Context, args TransferTxParams) (Transfer
 		}
 
 		//Add update accounts' balance later
-		fmt.Println(txName, "get account 1")
-		acc1, err := q.GetAccountForUpdate(ctx, args.FromAccountID)
-		if err != nil {
-			return err
-		}
+		// fmt.Println(txName, "get account 1")
+		// acc1, err := q.GetAccountForUpdate(ctx, args.FromAccountID)
+		// if err != nil {
+		// 	return err
+		// }
+
 		//move money out of acc1: sender
-		fmt.Println(txName, "update account 1")
-		result.FromAccount, err = q.UpdateAccount(ctx, UpdateAccountParams{
-			ID:      args.FromAccountID,
-			Balance: acc1.Balance - args.Amount,
+		// fmt.Println(txName, "update account 1")
+		// result.FromAccount, err = q.UpdateAccount(ctx, UpdateAccountParams{
+		// 	ID:      args.FromAccountID,
+		// 	Balance: acc1.Balance - args.Amount,
+		// })
+		result.FromAccount, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
+			ID:     args.FromAccountID,
+			Amount: -args.Amount,
 		})
 		if err != nil {
 			return err
 		}
 
-		fmt.Println(txName, "get account 2")
-		acc2, err := q.GetAccountForUpdate(ctx, args.ToAccountID)
-		if err != nil {
-			return err
-		}
+		// fmt.Println(txName, "get account 2")
+		// acc2, err := q.GetAccountForUpdate(ctx, args.ToAccountID)
+		// if err != nil {
+		// 	return err
+		// }
 
 		//move money into acc2: receiver
 
-		fmt.Println(txName, "update account 2")
-		result.ToAccount, err = q.UpdateAccount(ctx, UpdateAccountParams{
-			ID:      args.ToAccountID,
-			Balance: acc2.Balance + args.Amount,
+		// fmt.Println(txName, "update account 2")
+		// result.ToAccount, err = q.UpdateAccount(ctx, UpdateAccountParams{
+		// 	ID:      args.ToAccountID,
+		// 	Balance: acc2.Balance + args.Amount,
+		// })
+		result.ToAccount, err = q.AddAccountBalance(ctx, AddAccountBalanceParams{
+			ID:     args.ToAccountID,
+			Amount: args.Amount,
 		})
 		if err != nil {
 			return err
