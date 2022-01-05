@@ -18,7 +18,7 @@ func main() {
 		log.Fatal("cannot load config:", err)
 	}
 
-	conn, err := sql.Open(cfg.DBDriver, cfg.DBSource)
+	conn, err := sql.Open("postgres", cfg.DBSource)
 	if err != nil {
 		log.Fatal("cannot connect to db:", err)
 	}
