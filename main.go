@@ -7,7 +7,7 @@ import (
 	"gobank/util"
 	"log"
 
-	_ "github.com/bmizerany/pq"
+	_ "github.com/lib/pq"
 )
 
 func main() {

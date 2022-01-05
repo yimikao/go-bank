@@ -6,7 +6,8 @@ import (
 	"log"
 	"os"
 	"testing"
-	// _ "github.com/lib/pq"
+
+	_ "github.com/lib/pq"
 )
 
 var testQueries *Queries //A test Queries object(Test Database wrapping either sql.DB/Tx)
