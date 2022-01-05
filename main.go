@@ -7,7 +7,7 @@ import (
 	"gobank/util"
 	"log"
 
-	_ "github.com/lib/pq"
+	_ "github.com/bmizerany/pq"
 )
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 		log.Fatal("cannot load config:", err)
 	}
 
-	conn, err := sql.Open("postgres", cfg.DBSource)
+	conn, err := sql.Open(cfg.DBDriver, cfg.DBSource)
 	if err != nil {
 		log.Fatal("cannot connect to db:", err)
 	}
