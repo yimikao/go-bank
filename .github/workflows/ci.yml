@@ -11,6 +11,7 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    
     services:
       postgres:
         image: postgres:12-alpine
@@ -33,13 +34,13 @@ jobs:
       with:
         go-version: ^1.13
       id: go
-    
-    - name: Get library
-      run: go get github.com/lib/pq
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
     
+    # - name: Get library
+    #   run: go get github.com/lib/pq
+
     - name: Install golang-migrate
       run: |
         curl -L https://github.com/golang-migrate/migrate/releases/download/v4.12.2/migrate.linux-amd64.tar.gz | tar xvz
@@ -50,7 +51,7 @@ jobs:
       run: migrate -path db/migration -database "postgresql://yinka:supadiski@localhost:5432/go_bank?sslmode=disable" -verbose up
 
     - name: Test
-      run: go test -v ./...
+      run: go test -v -cover ./...
 
 
     
