@@ -11,13 +11,13 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:12-alpine
         env:
-          POSTGRES_USER: yinka
-          POSTGRES_PASSWORD: supadiski
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: secret
           POSTGRES_DB: go_bank
         ports:
         - 5432:5432
@@ -48,7 +48,7 @@ jobs:
         which migrate
 
     - name: Run migrations
-      run: migrate -path db/migration -database "postgresql://yinka:supadiski@localhost:5432/go_bank?sslmode=disable" -verbose up
+      run: migrate -path db/migration -database "postgresql://root:secret@localhost:5432/go_bank?sslmode=disable" -verbose up
 
     - name: Test
       run: go test -v -cover ./...
