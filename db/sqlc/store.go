@@ -58,6 +58,7 @@ type TransferTxResult struct {
 
 var txKey = struct{}{}
 
+//A better way to update account balance: AddAccountBalance Query
 func addMoney(
 	ctx context.Context,
 	q *Queries,
@@ -132,7 +133,8 @@ func (s *SQLStore) TransferTx(ctx context.Context, args TransferTxParams) (Trans
 		// })
 
 		///##
-		// always update the account with smaller ID first to avoid deadlock
+		//avoiding deadlock by making both transactions update the accounts balance in the same order
+		//here, I update the account with smaller ID first.
 		if args.FromAccountID < args.ToAccountID {
 			result.FromAccount, result.ToAccount, err = addMoney(ctx, q, args.FromAccountID, -args.Amount, args.ToAccountID, args.Amount)
 		} else {
