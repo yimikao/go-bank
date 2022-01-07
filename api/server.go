@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	db "gobank/db/sqlc"
+	"gobank/token"
+	"gobank/util"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,12 +14,23 @@ import (
 )
 
 type Server struct {
-	store  db.Store
-	router *gin.Engine
+	config     util.Config
+	store      db.Store
+	tokenMaker token.Maker
+	router     *gin.Engine
 }
 
-func NewServer(s db.Store) (server *Server) {
-	server = &Server{store: s}
+func NewServer(cfg util.Config, s db.Store) (server *Server, err error) {
+	tm, err := token.NewJWTMaker(cfg.TokenSecretKey)
+	if err != nil {
+		return nil, fmt.Errorf("cannot create token maker: %w", err)
+	}
+
+	server = &Server{
+		config:     cfg,
+		store:      s,
+		tokenMaker: tm,
+	}
 	r := gin.Default()
 
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
