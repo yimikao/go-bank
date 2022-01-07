@@ -31,23 +31,29 @@ func NewServer(cfg util.Config, s db.Store) (server *Server, err error) {
 		store:      s,
 		tokenMaker: tm,
 	}
-	r := gin.Default()
 
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		v.RegisterValidation("currency", validCurrency)
 	}
 
-	r.POST("/users", server.createUser)
-	r.POST("/accounts", server.createAccount)
-	r.GET("/accounts/:id", server.getAccount)
-	r.GET("/accounts/", server.listAccount)
-	r.POST("/transfers", server.createTransfer)
-	server.router = r
+	server.setupRouter()
 	return
 }
 
 func (s *Server) Start(addr string) error {
 	return s.router.Run(addr)
+}
+func (s *Server) setupRouter() {
+	r := gin.Default()
+
+	r.POST("/users", s.createUser)
+	r.POST("/users/login", s.login)
+	r.POST("/accounts", s.createAccount)
+	r.GET("/accounts/:id", s.getAccount)
+	r.GET("/accounts/", s.listAccount)
+	r.POST("/transfers", s.createTransfer)
+
+	s.router = r
 }
 
 func (s *Server) validAccount(ctx *gin.Context, accountID int64, currency string) bool {
