@@ -22,27 +22,27 @@ func authMiddleware(tokenMaker token.Maker) gin.HandlerFunc {
 		authHeader := ctx.GetHeader(authorizationHeaderKey)
 		if len(authHeader) == 0 {
 			err := errors.New("authorization header not provided")
-			ctx.AbortWithStatusJSON(http.StatusForbidden, errorResponse(err))
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(err))
 			return
 		}
 
 		fields := strings.Fields(authHeader)
 		if len(fields) < 2 {
 			err := errors.New("wrong authorization header format provided")
-			ctx.AbortWithStatusJSON(http.StatusForbidden, errorResponse(err))
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(err))
 			return
 		}
 
 		if strings.ToLower(fields[0]) != authorizationTypeBearer {
 			err := errors.New("wrong autoricxation header type provided")
-			ctx.AbortWithStatusJSON(http.StatusForbidden, errorResponse(err))
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(err))
 			return
 		}
 
 		accessToken := fields[1]
 		payload, err := tokenMaker.VerifyToken(accessToken)
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusForbidden, errorResponse(err))
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(err))
 			return
 		}
 
