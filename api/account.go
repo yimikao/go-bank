@@ -2,7 +2,9 @@ package api
 
 import (
 	"database/sql"
+	"errors"
 	db "gobank/db/sqlc"
+	"gobank/token"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,7 +12,7 @@ import (
 )
 
 type createAccountRequest struct {
-	Owner    string `json:"owner" binding:"required"`
+	// Owner    string `json:"owner" binding:"required"`
 	Currency string `json:"currency" binding:"required,currency"`
 }
 
@@ -21,8 +23,10 @@ func (s *Server) createAccount(ctx *gin.Context) {
 		return
 	}
 
+	payload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+
 	args := db.CreateAccountParams{
-		Owner:    req.Owner,
+		Owner:    payload.Username,
 		Currency: req.Currency,
 		Balance:  0,
 	}
@@ -62,6 +66,14 @@ func (s *Server) getAccount(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
+
+	payload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	if payload.Username != acc.Owner {
+		err := errors.New("account doesn't belong to authenticated user")
+		ctx.JSON(http.StatusUnauthorized, errorResponse(err))
+		return
+	}
+
 	ctx.JSON(http.StatusOK, acc)
 }
 
