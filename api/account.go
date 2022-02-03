@@ -88,9 +88,13 @@ func (s *Server) listAccount(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
+	payload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+
 	args := db.ListAccountsParams{
+		Owner:  payload.Username,
 		Limit:  req.PageSize,
 		Offset: (req.PageID - 1) * req.PageSize,
+		// Offset: 0,
 	}
 	accs, err := s.store.ListAccounts(ctx, args)
 	if err != nil {
