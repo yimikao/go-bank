@@ -1,12 +1,10 @@
 package api
 
 import (
-	"database/sql"
 	"fmt"
 	db "gobank/db/sqlc"
 	"gobank/token"
 	"gobank/util"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -57,23 +55,6 @@ func (s *Server) setupRouter() {
 	authRoutes.POST("/transfers", s.createTransfer)
 
 	s.router = r
-}
-
-func (s *Server) validAccount(ctx *gin.Context, accountID int64, currency string) bool {
-	acc, err := s.store.GetAccount(ctx, accountID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
-			return false
-		}
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-	}
-	if acc.Currency != currency {
-		err := fmt.Errorf("account [%d] currency mismatch: %s vs %s", acc.ID, acc.Currency, currency)
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return false
-	}
-	return true
 }
 
 func errorResponse(err error) gin.H {
