@@ -1,16 +1,18 @@
-postgres: ; sudo docker run --name postgrescontainr -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:12-alpine
+postgres: ; sudo docker run --name postgrescontainr -p 5430:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:12-alpine
 
 createdb: ; sudo docker exec -it postgrescontainr createdb --username=root --owner=root go_bank
 
 dropdb: ; sudo docker exec -it postgrescontainr dropdb go_bank
 
-migrateup: ; migrate -path db/migration -database "postgresql://root:secret@localhost:5432/go_bank?sslmode=disable" -verbose up
+schema: ; migrate create -ext sql -dir db/migration -seq init_schema
 
-migratedown: ; migrate -path db/migration -database "postgresql://root:secret@localhost:5432/go_bank?sslmode=disable" -verbose down
+migrateup: ; migrate -path db/migration -database "postgresql://root:secret@localhost:5430/go_bank?sslmode=disable" -verbose up
 
-migrateup1: ; migrate -path db/migration -database "postgresql://root:secret@localhost:5432/go_bank?sslmode=disable" -verbose up 1
+migratedown: ; migrate -path db/migration -database "postgresql://root:secret@localhost:5430/go_bank?sslmode=disable" -verbose down
 
-migratedown1: ; migrate -path db/migration -database "postgresql://root:secret@localhost:5432/go_bank?sslmode=disable" -verbose down 1
+migrateup1: ; migrate -path db/migration -database "postgresql://root:secret@localhost:5430/go_bank?sslmode=disable" -verbose up 1
+
+migratedown1: ; migrate -path db/migration -database "postgresql://root:secret@localhost:5430/go_bank?sslmode=disable" -verbose down 1
 
 sqlc: ; sqlc generate
 
