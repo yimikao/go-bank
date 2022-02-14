@@ -48,7 +48,7 @@ jobs:
         which migrate
 
     - name: Run migrations
-      run: migrate -path db/migration -database "postgresql://root:secret@localhost:5430/go_bank?sslmode=disable" -verbose up
+      run: migrate -path db/migration -database "postgresql://root:secret@localhost:5431/go_bank?sslmode=disable" -verbose up
 
     - name: Test
       run: go test -v -cover ./...
