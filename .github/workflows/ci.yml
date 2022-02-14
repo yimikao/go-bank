@@ -20,7 +20,7 @@ jobs:
           POSTGRES_PASSWORD: secret
           POSTGRES_DB: go_bank
         ports:
-        - 5432:5432
+        - 5430:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -32,7 +32,7 @@ jobs:
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
       with:
-        go-version: ^1.13
+        go-version: ^1.17
       id: go
 
     - name: Check out code into the Go module directory
@@ -48,7 +48,7 @@ jobs:
         which migrate
 
     - name: Run migrations
-      run: migrate -path db/migration -database "postgresql://root:secret@localhost:5432/go_bank?sslmode=disable" -verbose up
+      run: migrate -path db/migration -database "postgresql://root:secret@localhost:5430/go_bank?sslmode=disable" -verbose up
 
     - name: Test
       run: go test -v -cover ./...
