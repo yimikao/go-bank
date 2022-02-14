@@ -1,4 +1,4 @@
-postgres: ; sudo docker run --name postgrescontainer -p 5431:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:12-alpine
+postgres: ; sudo docker run --name postgrescontainer  --network bank-network -p 5431:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:12-alpine
 
 gobank: ; sudo docker run --name gobankcontainer --network bank-network -p 8081:8081 -e GIN_MODE=release -e DB_SOURCE=postgresql://root:secret@postgrescontainer:5432/go_bank?sslmode=disable gobank:latest
 
