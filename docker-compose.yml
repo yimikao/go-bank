@@ -13,9 +13,8 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - DB_SOURCE=postgresql://root:secret@postgrescontainer:5432/go_bank?sslmode=disable
+      - DB_SOURCE=postgresql://root:secret@postgres:5432/go_bank?sslmode=disable
     depends_on:
       - postgres 
-    #entrypoint will overwrite "ENTRYPOINT -> CMD sequence of Dockerfile"
     entrypoint: [ "/app/wait-for.sh", "postgres:5432", "--", "/app/start.sh" ]
     command: [ "/app/main" ]
